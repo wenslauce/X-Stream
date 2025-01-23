@@ -1,4 +1,4 @@
-# CineGeek 2.0 beta
+# X-Stream 1.0
 
 A movie and series streaming website.
 
