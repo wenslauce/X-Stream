@@ -25,20 +25,7 @@ export default async function Page({
   try {
     tvData = await getTvDetails(id);
   } catch {
-    // fallback - render player without sidebar
-  }
-
-  if (!tvData) {
-    return (
-      <div className="h-screen bg-black">
-        <TvWatchClient
-          id={id}
-          initialData={null as any}
-          initialSeason={season}
-          initialEpisode={episode}
-        />
-      </div>
-    );
+    // fallback
   }
 
   return (

@@ -19,161 +19,179 @@ export default async function TvDetail({ id }: { id: number }) {
   const cast = show?.credits?.cast?.slice(0, 10) ?? [];
   const similar = show?.similar?.results?.slice(0, 12) ?? [];
   const seasons = show?.seasons?.filter((s) => s.season_number > 0) ?? [];
+  const trailer = show?.videos?.results?.find((v) => v.type === 'Trailer' && v.site === 'YouTube');
 
   return (
-    <div className="relative min-h-screen">
-      {/* Backdrop */}
-      {show.backdrop_path && (
-        <div className="absolute inset-0 -z-10">
+    <div className="min-h-screen bg-neutral-950">
+      {/* Netflix-style Hero */}
+      <div className="relative h-[70vh] min-h-[500px] w-full">
+        {show.backdrop_path && (
           <Image
             src={`https://image.tmdb.org/t/p/original${show.backdrop_path}`}
             alt=""
             fill
-            className="object-cover opacity-30"
+            className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/40" />
-        </div>
-      )}
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-neutral-950/80 via-transparent to-transparent" />
 
-      <div className="mx-auto max-w-7xl px-4 py-8 md:py-16">
-        <div className="flex flex-col gap-8 md:flex-row">
-          {/* Poster */}
-          <div className="shrink-0">
-            <Image
-              src={
-                show.poster_path
-                  ? `https://image.tmdb.org/t/p/w500${show.poster_path}`
-                  : '/images/placeholder-poster.png'
-              }
-              alt={show.name ?? ''}
-              width={300}
-              height={450}
-              className="rounded-lg shadow-2xl"
-              priority
-            />
-          </div>
+        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:gap-10">
+              <div className="hidden shrink-0 md:block">
+                <Image
+                  src={
+                    show.poster_path
+                      ? `https://image.tmdb.org/t/p/w342${show.poster_path}`
+                      : '/images/placeholder-poster.png'
+                  }
+                  alt={show.name ?? ''}
+                  width={200}
+                  height={300}
+                  className="rounded-lg shadow-2xl"
+                  priority
+                />
+              </div>
 
-          {/* Details */}
-          <div className="flex flex-col justify-center gap-4">
-            <h1 className="text-3xl font-bold md:text-5xl">
-              {show.name}
-            </h1>
+              <div className="flex max-w-2xl flex-col gap-3">
+                <h1 className="text-3xl font-bold md:text-5xl lg:text-6xl">
+                  {show.name}
+                </h1>
 
-            <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-400">
-              {show.first_air_date && (
-                <span>{getYear(show.first_air_date)}</span>
-              )}
-              {show.number_of_seasons && (
-                <span>{show.number_of_seasons} Seasons</span>
-              )}
-              {show.number_of_episodes && (
-                <span>{show.number_of_episodes} Episodes</span>
-              )}
-              {show.vote_average > 0 && (
-                <span className="rounded bg-green-600/20 px-2 py-0.5 text-green-400 font-semibold">
-                  {Math.round(show.vote_average * 10)}% Match
-                </span>
-              )}
-            </div>
+                <div className="flex flex-wrap items-center gap-3 text-sm">
+                  {show.first_air_date && (
+                    <span className="text-neutral-400">{getYear(show.first_air_date)}</span>
+                  )}
+                  {show.number_of_seasons && (
+                    <span className="text-neutral-400">{show.number_of_seasons} Seasons</span>
+                  )}
+                  {show.number_of_episodes && (
+                    <span className="text-neutral-400">{show.number_of_episodes} Episodes</span>
+                  )}
+                  {show.vote_average > 0 && (
+                    <span className="rounded bg-green-600/20 px-2 py-0.5 text-sm font-semibold text-green-400">
+                      {Math.round(show.vote_average * 10)}% Match
+                    </span>
+                  )}
+                </div>
 
-            {show.tagline && (
-              <p className="text-sm italic text-neutral-500">{show.tagline}</p>
-            )}
+                {show.tagline && (
+                  <p className="text-sm italic text-neutral-500">{show.tagline}</p>
+                )}
 
-            {/* Genres */}
-            <div className="flex flex-wrap gap-2">
-              {show.genres?.map((genre) => (
-                <span
-                  key={genre.id}
-                  className="rounded-full border border-neutral-700 px-3 py-1 text-xs text-neutral-300"
-                >
-                  {genre.name}
-                </span>
-              ))}
-            </div>
-
-            <p className="max-w-2xl text-sm leading-relaxed text-neutral-300 md:text-base">
-              {show.overview}
-            </p>
-
-            {/* Watch button */}
-            <Link
-              href={`/watch/tv/${show.id}?s=1&e=1`}
-              className="inline-flex w-fit items-center gap-2 rounded-lg bg-white px-8 py-3 font-semibold text-black transition hover:bg-neutral-200"
-            >
-              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-              Start Watching
-            </Link>
-
-            {/* Cast */}
-            {cast.length > 0 && (
-              <div>
-                <h3 className="mb-2 text-sm font-semibold text-neutral-400">Cast</h3>
-                <div className="flex flex-wrap gap-6">
-              {cast.map((person) => (
-                    <Link
-                      key={person.id}
-                      href={`/people/${person.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${person.id}`}
-                      className="text-center group"
+                <div className="flex flex-wrap gap-2">
+                  {show.genres?.map((genre) => (
+                    <span
+                      key={genre.id}
+                      className="rounded-full border border-neutral-700 px-3 py-1 text-xs text-neutral-300"
                     >
-                      <div className="mx-auto mb-1 h-12 w-12 overflow-hidden rounded-full bg-neutral-800 transition group-hover:ring-2 group-hover:ring-white">
-                        {person.profile_path ? (
-                          <Image
-                            src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}
-                            alt={person.name}
-                            width={48}
-                            height={48}
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full items-center justify-center text-xs text-neutral-500">
-                            {person.name.charAt(0)}
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-xs text-neutral-400 group-hover:text-white">{person.name}</p>
-                    </Link>
+                      {genre.name}
+                    </span>
                   ))}
                 </div>
+
+                <p className="line-clamp-3 text-sm leading-relaxed text-neutral-300 md:text-base">
+                  {show.overview}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <Link
+                    href={`/watch/tv/${show.id}?s=1&e=1`}
+                    className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3 font-semibold text-black transition hover:bg-neutral-200"
+                  >
+                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                    Play
+                  </Link>
+                  {trailer && (
+                    <a
+                      href={`https://www.youtube.com/watch?v=${trailer.key}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-lg border border-neutral-600 bg-neutral-900/60 px-6 py-3 font-semibold text-white transition hover:bg-neutral-800"
+                    >
+                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                      </svg>
+                      Trailer
+                    </a>
+                  )}
+                </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
+      </div>
 
+      <div className="mx-auto max-w-7xl px-4 pb-16">
         {/* Seasons */}
         {seasons.length > 0 && (
-          <section className="mt-16">
-            <h2 className="mb-4 text-xl font-bold">Seasons</h2>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          <section className="py-8">
+            <h2 className="mb-4 text-xl font-bold text-white">Seasons</h2>
+            <div className="flex gap-4 overflow-x-auto pb-2">
               {seasons.map((season) => (
                 <Link
                   key={season.id}
                   href={`/watch/tv/${show.id}?s=${season.season_number}&e=1`}
-                  className="group"
+                  className="group shrink-0"
                 >
-                  <div className="aspect-[2/3] overflow-hidden rounded-lg bg-neutral-800">
+                  <div className="aspect-[2/3] w-32 overflow-hidden rounded-lg bg-neutral-800">
                     {season.poster_path ? (
                       <Image
                         src={`https://image.tmdb.org/t/p/w342${season.poster_path}`}
                         alt={season.name}
-                        width={200}
-                        height={300}
-                        className="h-full w-full object-cover transition group-hover:scale-105"
+                        width={128}
+                        height={192}
+                        className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-neutral-600">
-                        No Poster
+                      <div className="flex h-full items-center justify-center p-2 text-center text-xs text-neutral-600">
+                        {season.name}
                       </div>
                     )}
                   </div>
-                  <p className="mt-1 truncate text-sm font-medium text-white">
-                    {season.name}
+                  <p className="mt-1.5 text-sm font-medium text-white">{season.name}</p>
+                  <p className="text-xs text-neutral-500">{season.episode_count} Episodes</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Cast */}
+        {cast.length > 0 && (
+          <section className="py-8">
+            <h2 className="mb-4 text-xl font-bold text-white">Cast</h2>
+            <div className="flex gap-6 overflow-x-auto pb-2">
+              {cast.map((person) => (
+                <Link
+                  key={person.id}
+                  href={`/people/${person.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${person.id}`}
+                  className="shrink-0 text-center group"
+                >
+                  <div className="mx-auto mb-2 h-16 w-16 overflow-hidden rounded-full bg-neutral-800 transition ring-2 ring-transparent group-hover:ring-white">
+                    {person.profile_path ? (
+                      <Image
+                        src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}
+                        alt={person.name}
+                        width={64}
+                        height={64}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-lg text-neutral-500">
+                        {person.name.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                  <p className="max-w-[80px] truncate text-xs text-neutral-400 group-hover:text-white">
+                    {person.name}
                   </p>
-                  <p className="text-xs text-neutral-500">
-                    {season.episode_count} Episodes
+                  <p className="max-w-[80px] truncate text-[10px] text-neutral-600">
+                    {person.character}
                   </p>
                 </Link>
               ))}
@@ -183,9 +201,9 @@ export default async function TvDetail({ id }: { id: number }) {
 
         {/* Similar */}
         {similar.length > 0 && (
-          <section className="mt-16">
-            <h2 className="mb-4 text-xl font-bold">Similar Shows</h2>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          <section className="py-8">
+            <h2 className="mb-4 text-xl font-bold text-white">More Like This</h2>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
               {similar.map((s) => (
                 <Link
                   key={s.id}
@@ -199,15 +217,27 @@ export default async function TvDetail({ id }: { id: number }) {
                         alt={s.name ?? ''}
                         width={200}
                         height={300}
-                        className="h-full w-full object-cover transition group-hover:scale-105"
+                        className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-neutral-600">
-                        No Poster
+                      <div className="flex h-full items-center justify-center p-2 text-center text-xs text-neutral-600">
+                        {s.name}
                       </div>
                     )}
                   </div>
-                  <p className="mt-1 truncate text-sm text-neutral-400 group-hover:text-white">
+                  <div className="mt-1.5 flex items-center gap-2">
+                    {s.vote_average > 0 && (
+                      <span className="text-xs font-semibold text-green-400">
+                        {Math.round(s.vote_average * 10)}%
+                      </span>
+                    )}
+                    {s.first_air_date && (
+                      <span className="text-xs text-neutral-500">
+                        {getYear(s.first_air_date)}
+                      </span>
+                    )}
+                  </div>
+                  <p className="truncate text-sm text-neutral-400 group-hover:text-white">
                     {s.name}
                   </p>
                 </Link>
