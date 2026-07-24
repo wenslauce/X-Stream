@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import EmbedPlayer from '@/components/watch/embed-player';
+import CustomPlayer from '@/components/watch/custom-player';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getYear } from '@/lib/utils';
@@ -44,19 +44,42 @@ export default function TvWatchClient({
     fetchSeason();
   }, [id, season]);
 
-  React.useEffect(() => {
+  // Reset episode to 1 synchronously when season changes
+  const handleSeasonChange = (newSeason: string) => {
+    setSeason(newSeason);
     setEpisode('1');
-  }, [season]);
+  };
+
+  const handleNextEpisode = React.useCallback(() => {
+    const nextEp = parseInt(episode) + 1;
+    const maxEp = currentSeason?.episode_count ?? nextEp;
+    if (nextEp <= maxEp) {
+      setEpisode(String(nextEp));
+    } else {
+      const nextSeasonIdx = seasons.findIndex(
+        (s) => s.season_number === parseInt(season),
+      );
+      if (nextSeasonIdx >= 0 && nextSeasonIdx < seasons.length - 1) {
+        const nextSeason = seasons[nextSeasonIdx + 1];
+        setSeason(String(nextSeason.season_number));
+        setEpisode('1');
+      }
+    }
+  }, [episode, season, seasons, currentSeason]);
 
   return (
     <div className="min-h-screen bg-black">
-      {/* Player */}
+      {/* Player - key forces remount on season/episode change */}
       <div className="relative aspect-video w-full">
-        <EmbedPlayer
+        <CustomPlayer
+          key={`${id}-s${season}-e${episode}`}
           mediaId={String(id)}
           mediaType="tv"
           season={season}
           episode={episode}
+          title={initialData?.name ?? undefined}
+          hasNextEpisode={true}
+          onNextEpisode={handleNextEpisode}
         />
       </div>
 
@@ -101,7 +124,7 @@ export default function TvWatchClient({
                   </label>
                   <select
                     value={season}
-                    onChange={(e) => setSeason(e.target.value)}
+                    onChange={(e) => handleSeasonChange(e.target.value)}
                     className="w-48 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     {seasons.map((s) => (

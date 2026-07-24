@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getIdFromSlug, getYear } from '@/lib/utils';
-import EmbedPlayer from '@/components/watch/embed-player';
+import CustomPlayer from '@/components/watch/custom-player';
 import { getMovieDetails } from '@/services/MovieService/tmdbDetails';
 
 export const revalidate = 3600;
@@ -24,7 +24,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
     <div className="min-h-screen bg-black">
       {/* Player */}
       <div className="relative aspect-video w-full">
-        <EmbedPlayer mediaId={String(id)} mediaType="movie" />
+        <CustomPlayer mediaId={String(id)} mediaType="movie" title={movie?.title ?? undefined} />
       </div>
 
       {/* Content below player */}
