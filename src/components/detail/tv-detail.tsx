@@ -113,9 +113,13 @@ export default async function TvDetail({ id }: { id: number }) {
               <div>
                 <h3 className="mb-2 text-sm font-semibold text-neutral-400">Cast</h3>
                 <div className="flex flex-wrap gap-6">
-                  {cast.map((person) => (
-                    <div key={person.id} className="text-center">
-                      <div className="mx-auto mb-1 h-12 w-12 overflow-hidden rounded-full bg-neutral-800">
+              {cast.map((person) => (
+                    <Link
+                      key={person.id}
+                      href={`/people/${person.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${person.id}`}
+                      className="text-center group"
+                    >
+                      <div className="mx-auto mb-1 h-12 w-12 overflow-hidden rounded-full bg-neutral-800 transition group-hover:ring-2 group-hover:ring-white">
                         {person.profile_path ? (
                           <Image
                             src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}
@@ -130,8 +134,8 @@ export default async function TvDetail({ id }: { id: number }) {
                           </div>
                         )}
                       </div>
-                      <p className="text-xs text-neutral-400">{person.name}</p>
-                    </div>
+                      <p className="text-xs text-neutral-400 group-hover:text-white">{person.name}</p>
+                    </Link>
                   ))}
                 </div>
               </div>

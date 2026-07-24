@@ -106,3 +106,61 @@ export const getTvCredits = cache(async (id: number) => {
   const { data } = await tmdbClient.get<CreditsResponse>(`/tv/${id}/credits`);
   return data;
 });
+
+// ─── Person / Actor Types ────────────────────────────────────────────
+
+export type PersonDetails = {
+  id: number;
+  name: string;
+  biography: string;
+  birthday: string | null;
+  deathday: string | null;
+  place_of_birth: string | null;
+  profile_path: string | null;
+  known_for_department: string;
+  also_known_as: string[];
+  gender: number;
+  popularity: number;
+  homepage: string | null;
+  imdb_id: string | null;
+  adult: boolean;
+};
+
+export type PersonCredit = {
+  id: number;
+  title?: string;
+  name?: string;
+  character: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  release_date?: string;
+  first_air_date?: string;
+  media_type: 'movie' | 'tv';
+  vote_average: number;
+  genre_ids: number[];
+  popularity: number;
+  overview: string;
+  credit_id: string;
+  order: number;
+  episode_count?: number;
+};
+
+export type PersonCreditsResponse = {
+  id: number;
+  cast: PersonCredit[];
+  crew: PersonCredit[];
+};
+
+// ─── Person API Methods ──────────────────────────────────────────────
+
+export const getPersonDetails = cache(async (id: number) => {
+  const { data } = await tmdbClient.get<PersonDetails>(`/person/${id}`);
+  return data;
+});
+
+export const getPersonCombinedCredits = cache(async (id: number) => {
+  const { data } = await tmdbClient.get<PersonCreditsResponse>(
+    `/person/${id}/combined_credits`,
+  );
+  return data;
+});

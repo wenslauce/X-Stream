@@ -43,6 +43,19 @@ function EmbedPlayer({ mediaId, mediaType, season, episode }: EmbedPlayerProps) 
     setUrl(buildUrl(source));
   }, [source, buildUrl]);
 
+  // Silently block all popup attempts from embedded players
+  React.useEffect(() => {
+    const originalOpen = window.open.bind(window);
+    window.open = () => {
+      // Silently return null — the embed player never knows it was blocked
+      return null;
+    };
+
+    return () => {
+      window.open = originalOpen;
+    };
+  }, []);
+
   const handleSourceChange = (newSource: EmbedSource) => {
     setSource(newSource);
     localStorage.setItem(STORAGE_KEY, newSource.name);
@@ -75,7 +88,6 @@ function EmbedPlayer({ mediaId, mediaType, season, episode }: EmbedPlayerProps) 
           width="100%"
           height="100%"
           allowFullScreen
-          sandbox="allow-scripts allow-same-origin allow-forms"
           style={{
             position: 'absolute',
             top: 0,
@@ -83,7 +95,7 @@ function EmbedPlayer({ mediaId, mediaType, season, episode }: EmbedPlayerProps) 
             border: 'none',
             opacity: url ? 0 : 1,
           }}
-          referrerPolicy="no-referrer-when-downgrade"
+          referrerPolicy="no-referrer"
           onLoad={handleIframeLoaded}
         />
       </div>
