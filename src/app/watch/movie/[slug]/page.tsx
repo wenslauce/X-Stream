@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getIdFromSlug, getYear } from '@/lib/utils';
-import CustomPlayer from '@/components/watch/custom-player';
+import NativePlayer from '@/components/watch/native-player';
 import { getMovieDetails } from '@/services/MovieService/tmdbDetails';
 
 export const revalidate = 3600;
@@ -21,10 +21,10 @@ export default async function Page({ params }: { params: { slug: string } }) {
   const similar = movie?.similar?.results?.slice(0, 6) ?? [];
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       {/* Player */}
       <div className="relative aspect-video w-full">
-        <CustomPlayer mediaId={String(id)} mediaType="movie" title={movie?.title ?? undefined} />
+        <NativePlayer mediaId={String(id)} mediaType="movie" title={movie?.title ?? undefined} />
       </div>
 
       {/* Content below player */}

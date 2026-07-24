@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import CustomPlayer from '@/components/watch/custom-player';
+import NativePlayer from '@/components/watch/native-player';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getYear } from '@/lib/utils';
@@ -22,6 +22,8 @@ export default function TvWatchClient({
   const [season, setSeason] = React.useState(initialSeason);
   const [episode, setEpisode] = React.useState(initialEpisode);
   const [seasonData, setSeasonData] = React.useState<SeasonDetails | null>(null);
+  const [showSeasonPicker, setShowSeasonPicker] = React.useState(false);
+  const [showEpisodePicker, setShowEpisodePicker] = React.useState(false);
 
   const seasons = initialData?.seasons?.filter((s) => s.season_number > 0) ?? [];
   const currentSeason = seasons.find((s) => String(s.season_number) === season);
@@ -44,10 +46,10 @@ export default function TvWatchClient({
     fetchSeason();
   }, [id, season]);
 
-  // Reset episode to 1 synchronously when season changes
   const handleSeasonChange = (newSeason: string) => {
     setSeason(newSeason);
     setEpisode('1');
+    setShowSeasonPicker(false);
   };
 
   const handleNextEpisode = React.useCallback(() => {
@@ -67,11 +69,13 @@ export default function TvWatchClient({
     }
   }, [episode, season, seasons, currentSeason]);
 
+  const currentEpisode = episodes.find((e) => String(e.episode_number) === episode);
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Player - key forces remount on season/episode change */}
+      {/* Player */}
       <div className="relative aspect-video w-full">
-        <CustomPlayer
+        <NativePlayer
           key={`${id}-s${season}-e${episode}`}
           mediaId={String(id)}
           mediaType="tv"
@@ -111,72 +115,168 @@ export default function TvWatchClient({
               </div>
 
               {initialData.overview && (
-                <p className="mt-3 text-sm leading-relaxed text-neutral-300">
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   {initialData.overview}
                 </p>
               )}
 
-              {/* Season & Episode Selectors */}
-              <div className="mt-4 flex flex-wrap gap-4">
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-neutral-500">
-                    Season
-                  </label>
-                  <select
-                    value={season}
-                    onChange={(e) => handleSeasonChange(e.target.value)}
-                    className="w-48 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              {/* Season & Episode Picker Buttons */}
+              <div className="mt-4 flex flex-wrap gap-3">
+                {/* Season button */}
+                <div className="relative">
+                  <button
+                    onClick={() => { setShowSeasonPicker(!showSeasonPicker); setShowEpisodePicker(false); }}
+                    className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-muted"
                   >
-                    {seasons.map((s) => (
-                      <option key={s.id} value={s.season_number}>
-                        {s.name} ({s.episode_count} episodes)
-                      </option>
-                    ))}
-                  </select>
+                    <svg className="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                    {currentSeason?.name ?? `Season ${season}`}
+                  </button>
+
+                  {showSeasonPicker && (
+                    <>
+                      <div className="fixed inset-0 z-30" onClick={() => setShowSeasonPicker(false)} />
+                      <div className="absolute left-0 top-full z-40 mt-2 w-[500px] max-w-[90vw] rounded-xl border border-border bg-card shadow-2xl">
+                        <div className="p-3">
+                          <p className="mb-3 px-1 text-xs font-medium text-muted-foreground">Select Season</p>
+                          <div className="flex gap-3 overflow-x-auto pb-2">
+                            {seasons.map((s) => (
+                              <button
+                                key={s.id}
+                                onClick={() => handleSeasonChange(String(s.season_number))}
+                                className={`group shrink-0 text-left transition ${
+                                  String(s.season_number) === season ? 'ring-2 ring-primary rounded-lg' : ''
+                                }`}
+                              >
+                                <div className="aspect-[2/3] w-24 overflow-hidden rounded-lg bg-muted">
+                                  {s.poster_path ? (
+                                    <Image
+                                      src={`https://image.tmdb.org/t/p/w185${s.poster_path}`}
+                                      alt={s.name}
+                                      width={96}
+                                      height={144}
+                                      className="h-full w-full object-cover transition group-hover:scale-105"
+                                    />
+                                  ) : (
+                                    <div className="flex h-full items-center justify-center p-2 text-center text-[10px] text-muted-foreground">
+                                      {s.name}
+                                    </div>
+                                  )}
+                                </div>
+                                <p className="mt-1 text-xs font-medium text-foreground">{s.name}</p>
+                                <p className="text-[10px] text-muted-foreground">{s.episode_count} eps</p>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
 
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-neutral-500">
-                    Episode
-                  </label>
-                  <select
-                    value={episode}
-                    onChange={(e) => setEpisode(e.target.value)}
-                    className="w-64 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                {/* Episode button */}
+                <div className="relative">
+                  <button
+                    onClick={() => { setShowEpisodePicker(!showEpisodePicker); setShowSeasonPicker(false); }}
+                    className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-muted"
                   >
-                    {episodes.length > 0
-                      ? episodes.map((ep) => (
-                          <option key={ep.id} value={ep.episode_number}>
-                            E{ep.episode_number} - {ep.name}
-                          </option>
-                        ))
-                      : currentSeason &&
-                        Array.from(
-                          { length: currentSeason.episode_count },
-                          (_, i) => i + 1,
-                        ).map((epNum) => (
-                          <option key={epNum} value={epNum}>
-                            Episode {epNum}
-                          </option>
-                        ))}
-                  </select>
+                    <svg className="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                    Episode {episode}{currentEpisode ? ` - ${currentEpisode.name}` : ''}
+                  </button>
+
+                  {showEpisodePicker && (
+                    <>
+                      <div className="fixed inset-0 z-30" onClick={() => setShowEpisodePicker(false)} />
+                      <div className="absolute left-0 top-full z-40 mt-2 w-[600px] max-w-[90vw] rounded-xl border border-border bg-card shadow-2xl">
+                        <div className="p-3">
+                          <p className="mb-3 px-1 text-xs font-medium text-muted-foreground">
+                            {currentSeason?.name ?? `Season ${season}`} — Episodes
+                          </p>
+                          <div className="flex flex-col gap-1 max-h-80 overflow-y-auto">
+                            {(episodes.length > 0 ? episodes : 
+                              currentSeason ? Array.from({ length: currentSeason.episode_count }, (_, i) => ({
+                                id: i + 1,
+                                episode_number: i + 1,
+                                name: `Episode ${i + 1}`,
+                                still_path: null,
+                                overview: '',
+                                air_date: null,
+                                season_number: parseInt(season),
+                                vote_average: 0,
+                                runtime: null,
+                              })) : []
+                            ).map((ep) => (
+                              <button
+                                key={ep.id}
+                                onClick={() => { setEpisode(String(ep.episode_number)); setShowEpisodePicker(false); }}
+                                className={`flex items-center gap-3 rounded-lg p-2 text-left transition ${
+                                  String(ep.episode_number) === episode
+                                    ? 'bg-primary/10 ring-1 ring-primary'
+                                    : 'hover:bg-muted'
+                                }`}
+                              >
+                                {/* Episode still */}
+                                <div className="h-16 w-28 shrink-0 overflow-hidden rounded bg-muted">
+                                  {'still_path' in ep && ep.still_path ? (
+                                    <Image
+                                      src={`https://image.tmdb.org/t/p/w300${ep.still_path}`}
+                                      alt={ep.name}
+                                      width={112}
+                                      height={64}
+                                      className="h-full w-full object-cover"
+                                    />
+                                  ) : (
+                                    <div className="flex h-full items-center justify-center text-muted-foreground/50">
+                                      <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z" />
+                                      </svg>
+                                    </div>
+                                  )}
+                                </div>
+                                {/* Info */}
+                                <div className="min-w-0 flex-1">
+                                  <p className={`text-sm font-medium ${
+                                    String(ep.episode_number) === episode ? 'text-foreground' : 'text-foreground'
+                                  }`}>
+                                    E{ep.episode_number} - {ep.name}
+                                  </p>
+                                  {'overview' in ep && ep.overview && (
+                                    <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                                      {ep.overview}
+                                    </p>
+                                  )}
+                                </div>
+                                {/* Active indicator */}
+                                {String(ep.episode_number) === episode && (
+                                  <span className="shrink-0 rounded-full bg-primary px-2 py-0.5 text-[10px] font-medium text-primary-foreground">
+                                    Playing
+                                  </span>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
               {/* Current episode info */}
-              {seasonData && (
-                <div className="mt-4 rounded-lg bg-neutral-900 p-3">
-                  <p className="text-sm font-medium text-white">
+              {currentEpisode && (
+                <div className="mt-4 rounded-lg bg-card p-4 border border-border">
+                  <p className="text-sm font-medium text-foreground">
                     Now Playing: S{season} E{episode}
                   </p>
-                  {episodes.find((e) => String(e.episode_number) === episode)
-                    ?.name && (
-                    <p className="mt-1 text-sm text-neutral-400">
-                      {
-                        episodes.find(
-                          (e) => String(e.episode_number) === episode,
-                        )?.name
-                      }
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {currentEpisode.name}
+                  </p>
+                  {'overview' in currentEpisode && currentEpisode.overview && (
+                    <p className="mt-2 text-xs leading-relaxed text-muted-foreground/80">
+                      {currentEpisode.overview}
                     </p>
                   )}
                 </div>
@@ -186,7 +286,7 @@ export default function TvWatchClient({
             {/* Right: Cast */}
             {cast.length > 0 && (
               <div className="md:w-72">
-                <h3 className="mb-3 text-sm font-semibold text-neutral-400">Cast</h3>
+                <h3 className="mb-3 text-sm font-semibold text-muted-foreground">Cast</h3>
                 <div className="flex flex-wrap gap-4 md:flex-col">
                   {cast.map((person) => (
                     <Link
@@ -194,7 +294,7 @@ export default function TvWatchClient({
                       href={`/people/${person.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${person.id}`}
                       className="flex items-center gap-2 group"
                     >
-                      <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-neutral-800">
+                      <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full bg-muted">
                         {person.profile_path ? (
                           <Image
                             src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}
@@ -204,16 +304,16 @@ export default function TvWatchClient({
                             className="h-full w-full object-cover"
                           />
                         ) : (
-                          <div className="flex h-full items-center justify-center text-xs text-neutral-500">
+                          <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
                             {person.name.charAt(0)}
                           </div>
                         )}
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate text-xs text-neutral-300 group-hover:text-white">
+                        <p className="truncate text-xs text-foreground group-hover:text-primary">
                           {person.name}
                         </p>
-                        <p className="truncate text-[10px] text-neutral-600">
+                        <p className="truncate text-[10px] text-muted-foreground/60">
                           {person.character}
                         </p>
                       </div>
@@ -227,7 +327,7 @@ export default function TvWatchClient({
           {/* Similar */}
           {similar.length > 0 && (
             <section className="mt-8">
-              <h2 className="mb-4 text-lg font-bold text-white">More Like This</h2>
+              <h2 className="mb-4 text-lg font-bold text-foreground">More Like This</h2>
               <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
                 {similar.map((s) => (
                   <Link
@@ -235,7 +335,7 @@ export default function TvWatchClient({
                     href={`/tv-shows/${s.name?.toLowerCase().replace(/\s+/g, '-')}-${s.id}`}
                     className="group"
                   >
-                    <div className="aspect-[2/3] overflow-hidden rounded-lg bg-neutral-800">
+                    <div className="aspect-[2/3] overflow-hidden rounded-lg bg-muted">
                       {s.poster_path ? (
                         <Image
                           src={`https://image.tmdb.org/t/p/w342${s.poster_path}`}
@@ -245,12 +345,12 @@ export default function TvWatchClient({
                           className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center text-xs text-neutral-600">
+                        <div className="flex h-full items-center justify-center text-xs text-muted-foreground/50">
                           No Poster
                         </div>
                       )}
                     </div>
-                    <p className="mt-1 truncate text-xs text-neutral-400 group-hover:text-white">
+                    <p className="mt-1 truncate text-xs text-muted-foreground group-hover:text-foreground">
                       {s.name}
                     </p>
                   </Link>
