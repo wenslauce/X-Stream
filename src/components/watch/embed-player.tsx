@@ -75,6 +75,7 @@ function EmbedPlayer({ mediaId, mediaType, season, episode }: EmbedPlayerProps) 
           width="100%"
           height="100%"
           allowFullScreen
+          sandbox="allow-scripts allow-same-origin allow-forms"
           style={{
             position: 'absolute',
             top: 0,

@@ -91,6 +91,10 @@ export const siteConfig = {
       // icon: Icons.movie,
     },
     {
+      title: 'Anime',
+      href: '/anime',
+    },
+    {
       title: 'New & Popular',
       href: '/new-and-popular',
       // icon: Icons.trendingUp,

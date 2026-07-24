@@ -1,6 +1,6 @@
 import { type Metadata } from 'next';
-import { handleMetadata } from '@/lib/utils';
-import TvShowPage from '../page';
+import { handleMetadata, getIdFromSlug } from '@/lib/utils';
+import TvDetail from '@/components/detail/tv-detail';
 
 type Props = {
   params: { slug: string };
@@ -13,6 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return handleMetadata(params.slug, 'tv-shows', 'tv');
 }
 
-export default async function Home() {
-  return TvShowPage();
+export default async function Page({ params }: { params: { slug: string } }) {
+  const id = getIdFromSlug(params.slug);
+  return <TvDetail id={id} />;
 }

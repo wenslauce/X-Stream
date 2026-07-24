@@ -95,6 +95,34 @@ export type ShowWithGenreAndVideo = Show & {
   videos?: {
     results: VideoResult[];
   };
+  credits?: {
+    cast: {
+      id: number;
+      name: string;
+      character: string;
+      profile_path: string | null;
+      order: number;
+    }[];
+    crew: {
+      id: number;
+      name: string;
+      job: string;
+      department: string;
+      profile_path: string | null;
+    }[];
+  };
+  similar?: {
+    page: number;
+    results: Show[];
+    total_pages: number;
+    total_results: number;
+  };
+  recommendations?: {
+    page: number;
+    results: Show[];
+    total_pages: number;
+    total_results: number;
+  };
 };
 
 export interface IStack<T> {

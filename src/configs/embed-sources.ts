@@ -10,9 +10,9 @@ export const embedSources: EmbedSource[] = [
     name: 'VidCore',
     domain: 'vidcore.org',
     getMovieUrl: (id) =>
-      `https://vidcore.org/embed/movie/${id}?autoPlay=false`,
+      `https://vidcore.org/embed/movie/${id}?autoPlay=true`,
     getTvUrl: (id, season, episode) =>
-      `https://vidcore.org/embed/tv/${id}/${season}/${episode}?autoPlay=false`,
+      `https://vidcore.org/embed/tv/${id}/${season}/${episode}?autoPlay=true`,
   },
   {
     name: '2embed',
@@ -24,9 +24,25 @@ export const embedSources: EmbedSource[] = [
   {
     name: 'VidSrc',
     domain: 'vsembed.ru',
-    getMovieUrl: (id) => `https://vidsrc-embed.ru/embed/movie/${id}`,
+    getMovieUrl: (id) => `https://vidsrc-embed.ru/embed/movie/${id}?autoplay=1`,
     getTvUrl: (id, season, episode) =>
-      `https://vidsrc-embed.ru/embed/tv/${id}/${season}/${episode}`,
+      `https://vidsrc-embed.ru/embed/tv/${id}/${season}/${episode}?autoplay=1`,
+  },
+  {
+    name: 'VidFast',
+    domain: 'vidfast.vc',
+    getMovieUrl: (id) =>
+      `https://vidfast.vc/movie/${id}?autoPlay=true`,
+    getTvUrl: (id, season, episode) =>
+      `https://vidfast.vc/tv/${id}/${season}/${episode}?autoPlay=true`,
+  },
+  {
+    name: 'VidEasy',
+    domain: 'player.videasy.net',
+    getMovieUrl: (id) =>
+      `https://player.videasy.net/movie/${id}?autoplayNextEpisode=true`,
+    getTvUrl: (id, season, episode) =>
+      `https://player.videasy.net/tv/${id}/${season}/${episode}?autoplayNextEpisode=true`,
   },
 ];
 
