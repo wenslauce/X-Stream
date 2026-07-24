@@ -15,12 +15,15 @@ export default function Page({
   params: { slug: string };
   searchParams: SearchParams;
 }) {
-  const id = params.slug.split('-').pop();
+  const id = params.slug.split('-').pop() ?? '';
   const season = searchParams.s ?? '1';
   const episode = searchParams.e ?? '1';
   return (
     <EmbedPlayer
-      url={`https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}?poster=true&autoPlay=false`}
+      mediaId={id}
+      mediaType="tv"
+      season={season}
+      episode={episode}
     />
   );
 }

@@ -28,6 +28,19 @@ const config = {
     ignoreDuringBuilds: true,
   },
   swcMinify: true,
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "X-Robots-Tag",
+            value: "noindex, nofollow, noimageindex, noarchive, nosnippet",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default config;

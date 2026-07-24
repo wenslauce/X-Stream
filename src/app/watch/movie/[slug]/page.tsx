@@ -4,6 +4,6 @@ import EmbedPlayer from '@/components/watch/embed-player';
 export const revalidate = 3600;
 
 export default function Page({ params }: { params: { slug: string } }) {
-  const id = params.slug.split('-').pop();
-  return <EmbedPlayer url={`https://vidsrc.cc/v2/embed/movie/${id}?poster=true&autoPlay=false`} />;
+  const id = params.slug.split('-').pop() ?? '';
+  return <EmbedPlayer mediaId={id} mediaType="movie" />;
 }
