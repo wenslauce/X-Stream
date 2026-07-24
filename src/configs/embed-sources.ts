@@ -56,54 +56,24 @@ export const embedSources: EmbedSource[] = [
       `https://player.videasy.net/tv/${id}/1/${episode}?autoplayNextEpisode=true`,
   },
   {
-    name: 'SuperEmbed',
-    domain: 'multiembed.mov',
+    name: 'VidKing',
+    domain: 'vidking.net',
     getMovieUrl: (id) =>
-      `https://multiembed.mov/directstream.php?video_id=${id}`,
+      `https://www.vidking.net/embed/movie/${id}?color=e50914&autoPlay=true`,
     getTvUrl: (id, season, episode) =>
-      `https://multiembed.mov/directstream.php?video_id=${id}&s=${season}&e=${episode}`,
+      `https://www.vidking.net/embed/tv/${id}/${season}/${episode}?color=e50914&autoPlay=true&nextEpisode=true&episodeSelector=true`,
     getAnimeUrl: (id, episode) =>
-      `https://multiembed.mov/directstream.php?video_id=${id}&s=1&e=${episode}`,
+      `https://www.vidking.net/embed/tv/${id}/1/${episode}?color=e50914&autoPlay=true&nextEpisode=true&episodeSelector=true`,
   },
   {
-    name: 'AutoEmbed',
-    domain: 'autoembed.cc',
+    name: 'Rive',
+    domain: 'rivestream.app',
     getMovieUrl: (id) =>
-      `https://autoembed.cc/embed/movie/${id}`,
+      `https://www.rivestream.app/embed?type=movie&id=${id}`,
     getTvUrl: (id, season, episode) =>
-      `https://autoembed.cc/embed/tv/${id}/${season}/${episode}`,
+      `https://www.rivestream.app/embed?type=tv&id=${id}&season=${season}&episode=${episode}`,
     getAnimeUrl: (id, episode) =>
-      `https://autoembed.cc/embed/tv/${id}/1/${episode}`,
-  },
-  {
-    name: 'FBOX',
-    domain: 'fboxtv.com',
-    getMovieUrl: (id) =>
-      `https://fboxtv.com/embed/movie/${id}`,
-    getTvUrl: (id, season, episode) =>
-      `https://fboxtv.com/embed/tv/${id}/${season}/${episode}`,
-    getAnimeUrl: (id, episode) =>
-      `https://fboxtv.com/embed/tv/${id}/1/${episode}`,
-  },
-  {
-    name: 'MoviesAPI',
-    domain: 'moviesapi.club',
-    getMovieUrl: (id) =>
-      `https://moviesapi.club/movie/${id}`,
-    getTvUrl: (id, season, episode) =>
-      `https://moviesapi.club/tv/${id}/${season}/${episode}`,
-    getAnimeUrl: (id, episode) =>
-      `https://moviesapi.club/tv/${id}/1/${episode}`,
-  },
-  {
-    name: 'AjCDN',
-    domain: 'ajcdn.bond',
-    getMovieUrl: (id) =>
-      `https://ajcdn.bond/embed/movie/${id}`,
-    getTvUrl: (id, season, episode) =>
-      `https://ajcdn.bond/embed/tv/${id}/${season}/${episode}`,
-    getAnimeUrl: (id, episode) =>
-      `https://ajcdn.bond/embed/tv/${id}/1/${episode}`,
+      `https://www.rivestream.app/embed?type=tv&id=${id}&season=1&episode=${episode}`,
   },
 ];
 
