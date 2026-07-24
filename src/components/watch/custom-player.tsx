@@ -179,7 +179,7 @@ export default function CustomPlayer({
       onMouseMove={showControlsTemporarily}
       onMouseLeave={() => { setShowControls(false); setShowProviderMenu(false); }}
     >
-      {/* Iframe — sandbox blocks popups natively */}
+      {/* Iframe — popup blocking handled by window.open override */}
       <iframe
         ref={iframeRef}
         src={currentUrl}
@@ -188,7 +188,6 @@ export default function CustomPlayer({
         allowFullScreen
         allow="autoplay; encrypted-media"
         referrerPolicy="no-referrer"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
         onLoad={() => setIframeLoaded(true)}
       />
 

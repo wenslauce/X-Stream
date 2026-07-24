@@ -97,7 +97,6 @@ function EmbedPlayer({ mediaId, mediaType, season, episode }: EmbedPlayerProps) 
             opacity: url ? 0 : 1,
           }}
           referrerPolicy="no-referrer"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
           onLoad={handleIframeLoaded}
         />
       </div>

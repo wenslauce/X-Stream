@@ -65,7 +65,7 @@ export default function NativePlayer({
 
   return (
     <div className="relative h-full w-full bg-black">
-      {/* Iframe — sandbox blocks popups natively */}
+      {/* Iframe — popup blocking handled by window.open override */}
       <iframe
         src={currentUrl}
         className="h-full w-full"
@@ -73,7 +73,6 @@ export default function NativePlayer({
         allowFullScreen
         allow="autoplay; encrypted-media"
         referrerPolicy="no-referrer"
-        sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
       />
 
       {/* Provider selector — positioned at top-right, above iframe */}
