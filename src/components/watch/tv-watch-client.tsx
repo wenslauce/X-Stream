@@ -68,7 +68,7 @@ export default function TvWatchClient({
   }, [episode, season, seasons, currentSeason]);
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       {/* Player - key forces remount on season/episode change */}
       <div className="relative aspect-video w-full">
         <CustomPlayer
@@ -89,11 +89,11 @@ export default function TvWatchClient({
           <div className="flex flex-col gap-6 md:flex-row">
             {/* Left: Info + Selectors */}
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-white md:text-3xl">
+              <h1 className="text-2xl font-bold text-foreground md:text-3xl">
                 {initialData.name}
               </h1>
 
-              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-neutral-400">
+              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                 {initialData.first_air_date && (
                   <span>{getYear(initialData.first_air_date)}</span>
                 )}

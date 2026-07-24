@@ -6,7 +6,7 @@ export default function WatchLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       <SiteHeader />
       {children}
     </div>

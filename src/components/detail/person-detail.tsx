@@ -63,7 +63,7 @@ export default async function PersonDetail({ id }: { id: number }) {
   const filmography = uniqueCredits;
 
   return (
-    <div className="min-h-screen bg-neutral-950">
+    <div className="min-h-screen bg-background">
       {/* Hero section with backdrop-like gradient */}
       <div className="relative">
         <div className="absolute inset-0 bg-gradient-to-b from-neutral-900 via-neutral-950 to-neutral-950" />
