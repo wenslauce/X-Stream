@@ -55,6 +55,56 @@ export const embedSources: EmbedSource[] = [
     getAnimeUrl: (id, episode) =>
       `https://player.videasy.net/tv/${id}/1/${episode}?autoplayNextEpisode=true`,
   },
+  {
+    name: 'SuperEmbed',
+    domain: 'multiembed.mov',
+    getMovieUrl: (id) =>
+      `https://multiembed.mov/directstream.php?video_id=${id}`,
+    getTvUrl: (id, season, episode) =>
+      `https://multiembed.mov/directstream.php?video_id=${id}&s=${season}&e=${episode}`,
+    getAnimeUrl: (id, episode) =>
+      `https://multiembed.mov/directstream.php?video_id=${id}&s=1&e=${episode}`,
+  },
+  {
+    name: 'AutoEmbed',
+    domain: 'autoembed.cc',
+    getMovieUrl: (id) =>
+      `https://autoembed.cc/embed/movie/${id}`,
+    getTvUrl: (id, season, episode) =>
+      `https://autoembed.cc/embed/tv/${id}/${season}/${episode}`,
+    getAnimeUrl: (id, episode) =>
+      `https://autoembed.cc/embed/tv/${id}/1/${episode}`,
+  },
+  {
+    name: 'FBOX',
+    domain: 'fboxtv.com',
+    getMovieUrl: (id) =>
+      `https://fboxtv.com/embed/movie/${id}`,
+    getTvUrl: (id, season, episode) =>
+      `https://fboxtv.com/embed/tv/${id}/${season}/${episode}`,
+    getAnimeUrl: (id, episode) =>
+      `https://fboxtv.com/embed/tv/${id}/1/${episode}`,
+  },
+  {
+    name: 'MoviesAPI',
+    domain: 'moviesapi.club',
+    getMovieUrl: (id) =>
+      `https://moviesapi.club/movie/${id}`,
+    getTvUrl: (id, season, episode) =>
+      `https://moviesapi.club/tv/${id}/${season}/${episode}`,
+    getAnimeUrl: (id, episode) =>
+      `https://moviesapi.club/tv/${id}/1/${episode}`,
+  },
+  {
+    name: 'AjCDN',
+    domain: 'ajcdn.bond',
+    getMovieUrl: (id) =>
+      `https://ajcdn.bond/embed/movie/${id}`,
+    getTvUrl: (id, season, episode) =>
+      `https://ajcdn.bond/embed/tv/${id}/${season}/${episode}`,
+    getAnimeUrl: (id, episode) =>
+      `https://ajcdn.bond/embed/tv/${id}/1/${episode}`,
+  },
 ];
 
 export const DEFAULT_SOURCE = 'VidCore';

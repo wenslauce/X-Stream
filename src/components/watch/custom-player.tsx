@@ -4,7 +4,7 @@ import { embedSources, STORAGE_KEY, DEFAULT_SOURCE } from '@/configs/embed-sourc
 
 interface CustomPlayerProps {
   mediaId: string;
-  mediaType: 'movie' | 'tv';
+  mediaType: 'movie' | 'tv' | 'anime';
   season?: string;
   episode?: string;
   onNextEpisode?: () => void;
@@ -58,6 +58,9 @@ export default function CustomPlayer({
   const currentUrl = React.useMemo(() => {
     const source = embedSources.find((s) => s.name === activeSource) ?? embedSources[0];
     if (mediaType === 'movie') return source.getMovieUrl(mediaId);
+    if (mediaType === 'anime' && source.getAnimeUrl) {
+      return source.getAnimeUrl(mediaId, episode ?? '1');
+    }
     return source.getTvUrl(mediaId, season ?? '1', episode ?? '1');
   }, [mediaId, mediaType, season, episode, activeSource]);
 
@@ -85,6 +88,13 @@ export default function CustomPlayer({
     }, LOAD_TIMEOUT_MS);
     return () => clearTimeout(timeout);
   }, [iframeLoaded, iframeError, activeSource]);
+
+  // Silently block all popup attempts from embedded players
+  React.useEffect(() => {
+    const originalOpen = window.open.bind(window);
+    window.open = () => null;
+    return () => { window.open = originalOpen; };
+  }, []);
 
   // Auto-hide controls
   const showControlsTemporarily = React.useCallback(() => {
@@ -169,7 +179,7 @@ export default function CustomPlayer({
       onMouseMove={showControlsTemporarily}
       onMouseLeave={() => { setShowControls(false); setShowProviderMenu(false); }}
     >
-      {/* Iframe - always full */}
+      {/* Iframe — sandbox blocks popups natively */}
       <iframe
         ref={iframeRef}
         src={currentUrl}
@@ -178,6 +188,7 @@ export default function CustomPlayer({
         allowFullScreen
         allow="autoplay; encrypted-media"
         referrerPolicy="no-referrer"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
         onLoad={() => setIframeLoaded(true)}
       />
 
@@ -312,8 +323,8 @@ export default function CustomPlayer({
 
           {/* Right */}
           <div className="flex items-center gap-2">
-            {/* Next Episode (TV only) */}
-            {mediaType === 'tv' && hasNextEpisode && (
+            {/* Next Episode (TV/Anime only) */}
+            {(mediaType === 'tv' || mediaType === 'anime') && hasNextEpisode && (
               <button
                 onClick={onNextEpisode}
                 className="rounded-md bg-white/10 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md transition hover:bg-white/20"

@@ -9,7 +9,7 @@ import {
 
 interface EmbedPlayerProps {
   mediaId: string;
-  mediaType: 'movie' | 'tv';
+  mediaType: 'movie' | 'tv' | 'anime';
   season?: string;
   episode?: string;
 }
@@ -29,8 +29,9 @@ function EmbedPlayer({ mediaId, mediaType, season, episode }: EmbedPlayerProps) 
 
   const buildUrl = React.useCallback(
     (src: EmbedSource) => {
-      if (mediaType === 'movie') {
-        return src.getMovieUrl(mediaId);
+      if (mediaType === 'movie') return src.getMovieUrl(mediaId);
+      if (mediaType === 'anime' && src.getAnimeUrl) {
+        return src.getAnimeUrl(mediaId, episode ?? '1');
       }
       return src.getTvUrl(mediaId, season ?? '1', episode ?? '1');
     },
@@ -96,6 +97,7 @@ function EmbedPlayer({ mediaId, mediaType, season, episode }: EmbedPlayerProps) 
             opacity: url ? 0 : 1,
           }}
           referrerPolicy="no-referrer"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
           onLoad={handleIframeLoaded}
         />
       </div>
