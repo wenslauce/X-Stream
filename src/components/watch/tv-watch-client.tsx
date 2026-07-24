@@ -11,6 +11,7 @@ interface TvWatchClientProps {
   initialData: TvDetails | null;
   initialSeason: string;
   initialEpisode: string;
+  mediaType?: 'tv' | 'anime';
 }
 
 export default function TvWatchClient({
@@ -18,6 +19,7 @@ export default function TvWatchClient({
   initialData,
   initialSeason,
   initialEpisode,
+  mediaType = 'tv',
 }: TvWatchClientProps) {
   const [season, setSeason] = React.useState(initialSeason);
   const [episode, setEpisode] = React.useState(initialEpisode);
@@ -78,8 +80,8 @@ export default function TvWatchClient({
         <NativePlayer
           key={`${id}-s${season}-e${episode}`}
           mediaId={String(id)}
-          mediaType="tv"
-          season={season}
+          mediaType={mediaType}
+          season={mediaType === 'anime' ? undefined : season}
           episode={episode}
           title={initialData?.name ?? undefined}
           hasNextEpisode={true}

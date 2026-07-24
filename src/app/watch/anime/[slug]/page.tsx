@@ -34,6 +34,7 @@ export default async function Page({
       initialData={tvData}
       initialSeason={season}
       initialEpisode={episode}
+      mediaType="anime"
     />
   );
 }
