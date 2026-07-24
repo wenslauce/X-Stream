@@ -122,15 +122,6 @@ export default function NativePlayer({
         )}
       </div>
 
-      {/* Next Episode button — bottom-right */}
-      {(mediaType === 'tv' || mediaType === 'anime') && hasNextEpisode && (
-        <button
-          onClick={onNextEpisode}
-          className="absolute bottom-4 right-4 z-50 rounded-md bg-black/60 px-4 py-2 text-sm font-medium text-white backdrop-blur-md transition hover:bg-black/80"
-        >
-          Next Episode
-        </button>
-      )}
     </div>
   );
 }
