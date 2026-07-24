@@ -40,9 +40,11 @@ export default function NativePlayer({
   const [isLoading, setIsLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [showSkipIntro, setShowSkipIntro] = React.useState(false);
+  const [useEmbedFallback, setUseEmbedFallback] = React.useState(false);
   const controlsTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const providerMenuRef = React.useRef<HTMLDivElement>(null);
+  const iframeRef = React.useRef<HTMLIFrameElement>(null);
 
   // Restore preferred source
   React.useEffect(() => {
@@ -212,15 +214,14 @@ export default function NativePlayer({
     setShowProviderMenu(false);
   };
 
-  // Auto-hide controls
+  // Auto-hide controls - don't close provider menu if it's open
   const showControlsTemporarily = React.useCallback(() => {
     setShowControls(true);
-    setShowProviderMenu(false);
     if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
     controlsTimeoutRef.current = setTimeout(() => {
-      if (isPlaying) setShowControls(false);
+      if (isPlaying && !showProviderMenu) setShowControls(false);
     }, 3000);
-  }, [isPlaying]);
+  }, [isPlaying, showProviderMenu]);
 
   // Close provider menu on outside click
   React.useEffect(() => {
@@ -273,7 +274,7 @@ export default function NativePlayer({
       ref={containerRef}
       className="group relative h-full w-full overflow-hidden bg-black"
       onMouseMove={showControlsTemporarily}
-      onMouseLeave={() => { setShowControls(false); setShowProviderMenu(false); }}
+      onMouseLeave={() => { if (!showProviderMenu) setShowControls(false); }}
     >
       {/* Video element */}
       <video
@@ -307,11 +308,34 @@ export default function NativePlayer({
         </div>
       )}
 
+      {/* Embed fallback iframe */}
+      {useEmbedFallback && (
+        <iframe
+          ref={iframeRef}
+          src={(() => {
+            const source = embedSources.find((s) => s.name === activeSource) ?? embedSources[0];
+            if (mediaType === 'movie') return source.getMovieUrl(mediaId);
+            return source.getTvUrl(mediaId, season ?? '1', episode ?? '1');
+          })()}
+          className="h-full w-full"
+          style={{ border: 'none' }}
+          allowFullScreen
+          allow="autoplay; encrypted-media"
+          referrerPolicy="no-referrer"
+        />
+      )}
+
       {/* Error */}
-      {error && !isLoading && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+      {error && !isLoading && !useEmbedFallback && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
           <p className="text-sm text-red-400">{error}</p>
           <p className="text-xs text-neutral-500">Try switching to another provider</p>
+          <button
+            onClick={() => setUseEmbedFallback(true)}
+            className="rounded-lg bg-white/10 px-5 py-2 text-sm font-medium text-white backdrop-blur-md transition hover:bg-white/20"
+          >
+            Switch to Embed Mode
+          </button>
         </div>
       )}
 
